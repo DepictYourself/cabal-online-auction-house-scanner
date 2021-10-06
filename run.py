@@ -11,10 +11,10 @@ def init():
 def run():
     init()
     img = make_screenshot()
-    item_name = parse_name(img)
-    item_quantity = parse_qty(img)
-    item_price = parse_price(img)
-    print(item_name, item_quantity ,item_price)
+    for i in range(7):
+        item_name, item_quantity, item_price = parse_row(img, i)
+        print(item_name, item_quantity ,item_price)
+    cv2.waitKey(0)
 
 
 

@@ -23,20 +23,45 @@ def convert_to_cv2_img(img):
 
 
 
-def parse_name(img, n = 0):
-    cropped_img = crop_image(img, c.AREA_NAME["x1"], c.AREA_NAME["y1"], c.AREA_NAME["x2"], c.AREA_NAME["y2"])
-    return parse_crop(cropped_img)
+def parse_row(img, row):
+    name = parse_name(img, row)
+    qty = parse_qty(img, row)
+    price = parse_price(img, row)
+    return (name, qty, price)
 
 
 
-def parse_qty(img):
-    cropped_img = crop_image(img, c.AREA_QTY["x1"], c.AREA_QTY["y1"], c.AREA_QTY["x2"], c.AREA_QTY["y2"])
-    return parse_crop(cropped_img)
+def parse_name(img, row = 0):
+    x1 = c.AREA_NAME["x1"]
+    y1 = c.AREA_NAME["y1"]
+    x2 = c.AREA_NAME["x2"]
+    y2 = c.AREA_NAME["y2"]
+    return parse(img, x1, y1, x2, y2, row)
 
 
 
-def parse_price(img):
-    cropped_img = crop_image(img, c.AREA_PRICE["x1"], c.AREA_PRICE["y1"], c.AREA_PRICE["x2"], c.AREA_PRICE["y2"])
+def parse_qty(img, row = 0):
+    x1 = c.AREA_QTY["x1"]
+    y1 = c.AREA_QTY["y1"]
+    x2 = c.AREA_QTY["x2"]
+    y2 = c.AREA_QTY["y2"]
+    return parse(img, x1, y1, x2, y2, row)
+
+
+
+def parse_price(img, row = 0):
+    x1 = c.AREA_PRICE["x1"]
+    y1 = c.AREA_PRICE["y1"]
+    x2 = c.AREA_PRICE["x2"]
+    y2 = c.AREA_PRICE["y2"]
+    return parse(img, x1, y1, x2, y2, row)
+
+
+
+def parse(img, x1, y1, x2, y2, n):
+    y1 = y1 + (n * c.GAP)
+    y2 = y2 + (n * c.GAP)
+    cropped_img = crop_image(img, x1, y1, x2, y2)
     return parse_crop(cropped_img)
 
 
@@ -53,6 +78,7 @@ def parse_crop(img_crop):
     img_crop = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY)
     # apply simple treshold for easier recognition with pytesseract
     thr = cv2.threshold(img_crop, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    cv2.imshow("thr", thr)
     item = pytesseract.image_to_string(thr, config="-c page_separator=''")
     return item
 
